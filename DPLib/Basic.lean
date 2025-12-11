@@ -46,26 +46,26 @@ def is_epsilon_dp (M : Mechanism ι α β) (ε : ℝ) : Prop :=
   are_neighbors d1 d2 → MeasurableSet S →
   (M d1 S) ≤ ENNReal.ofReal (Real.exp ε) * (M d2 S)
 
-def is_epsilon_dp_single (M : Mechanism ι α β) (ε : ℝ) : Prop :=
+def is_item_epsilon_dp (M : Mechanism ι α β) (ε : ℝ) : Prop :=
   ∀ (d1 d2 : Database ι α) (s : β), are_neighbors d1 d2 →
   (M d1 {s}) ≤ ENNReal.ofReal (Real.exp ε) * (M d2 {s})
 
 
-theorem single_to_event (m : Mechanism ι α β) (ε : ℝ) (h : is_epsilon_dp_single m ε) :
+theorem dp_item_to_set (m : Mechanism ι α β) (ε : ℝ) (h : is_item_epsilon_dp m ε) :
 is_epsilon_dp m ε := by
 
   sorry
 
-theorem event_to_single (m : Mechanism ι α β) (ε : ℝ) (h : is_epsilon_dp m ε) :
-is_epsilon_dp_single m ε := by
+theorem dp_set_to_item (m : Mechanism ι α β) (ε : ℝ) (h : is_epsilon_dp m ε) :
+is_item_epsilon_dp m ε := by
   sorry
 
-theorem event_eq_singleton (m : Mechanism ι α β) (ε : ℝ) :
-  is_epsilon_dp m ε ↔ is_epsilon_dp_single m ε := by
+theorem dp_set_items_eq (m : Mechanism ι α β) (ε : ℝ) :
+  is_epsilon_dp m ε ↔ is_item_epsilon_dp m ε := by
   constructor
-  · apply event_to_single
-  · apply single_to_event
+  · apply dp_set_to_item
+  · apply dp_item_to_set
 
-theorem dp_monotonic (m : Mechanism ι α β) (ε₁ ε₂ : ℝ) (H1 : ε₁ ≤ ε₂) (H2 : is_pure_dp) :
+theorem dp_mono_epsilon (m : Mechanism ι α β) (ε₁ ε₂ : ℝ) (H1 : ε₁ ≤ ε₂) (H2 : is_pure_dp) :
 is_epsilon_dp m ε₁ → is_epsilon_dp m ε₂ := by
   sorry
