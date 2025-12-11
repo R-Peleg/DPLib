@@ -68,8 +68,7 @@ theorem dp_set_items_eq (m : Mechanism ι α β) (ε : ℝ) :
 
 theorem dp_mono_epsilon (m : Mechanism ι α β) (ε₁ ε₂ : ℝ) (H1 : ε₁ ≤ ε₂) :
 is_epsilon_dp m ε₁ → is_epsilon_dp m ε₂ := by
-  simp only [is_epsilon_dp]
-  intro H2 d1 d2 s h_neighbors h_measurable
-  have h3 := H2 d1 d2 s h_neighbors h_measurable
-  apply h3.trans
-  gcongr
+  intro h_dp d1 d2 s h_neighbors h_measurable
+  calc
+  (m d1) s ≤ ENNReal.ofReal (Real.exp ε₁) * (m d2) s := h_dp d1 d2 s h_neighbors h_measurable
+  _         ≤ ENNReal.ofReal (Real.exp ε₂) * (m d2) s := by gcongr;
