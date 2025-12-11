@@ -66,6 +66,10 @@ theorem dp_set_items_eq (m : Mechanism ι α β) (ε : ℝ) :
   · apply dp_set_to_item
   · apply dp_item_to_set
 
-theorem dp_mono_epsilon (m : Mechanism ι α β) (ε₁ ε₂ : ℝ) (H1 : ε₁ ≤ ε₂) (H2 : is_pure_dp) :
+theorem dp_mono_epsilon (m : Mechanism ι α β) (ε₁ ε₂ : ℝ) (H1 : ε₁ ≤ ε₂) :
 is_epsilon_dp m ε₁ → is_epsilon_dp m ε₂ := by
-  sorry
+  simp only [is_epsilon_dp]
+  intro H2 d1 d2 s h_neighbors h_measurable
+  have h3 := H2 d1 d2 s h_neighbors h_measurable
+  apply h3.trans
+  gcongr
