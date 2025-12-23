@@ -7,7 +7,6 @@ import Mathlib.MeasureTheory.Measure.MeasureSpace
 open MeasureTheory
 
 variable {ι α β : Type*} [Fintype ι] [DecidableEq α] [MeasurableSpace β]
-  [MeasurableSingletonClass β]
 
 /--
 A Database is a mapping from a finite set of indices
@@ -52,20 +51,26 @@ def is_item_epsilon_dp (M : Mechanism ι α β) (ε : ℝ) [MeasurableSpace β] 
   (M d1 {s}) ≤ ENNReal.ofReal (Real.exp ε) * (M d2 {s})
 
 
+section Singletons
+
 theorem dp_item_to_set (m : Mechanism ι α β) (ε : ℝ) :
 is_item_epsilon_dp m ε -> is_epsilon_dp m ε := by
   sorry
 
+variable [MeasurableSingletonClass β]
 theorem dp_set_to_item (m : Mechanism ι α β) (ε : ℝ) :
 is_epsilon_dp m ε -> is_item_epsilon_dp m ε := by
   intro h_item_dp db1 db2 s h_neighbors
   exact h_item_dp db1 db2 {s} h_neighbors (MeasurableSet.singleton s)
+
 
 theorem dp_set_items_eq (m : Mechanism ι α β) (ε : ℝ) :
   is_epsilon_dp m ε ↔ is_item_epsilon_dp m ε := by
   constructor
   · apply dp_set_to_item
   · apply dp_item_to_set
+
+end Singletons
 
 theorem dp_mono_epsilon (m : Mechanism ι α β) (ε₁ ε₂ : ℝ) (H1 : ε₁ ≤ ε₂) :
 is_epsilon_dp m ε₁ → is_epsilon_dp m ε₂ := by
