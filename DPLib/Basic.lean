@@ -7,6 +7,7 @@ import Mathlib.MeasureTheory.Measure.MeasureSpace
 open MeasureTheory
 
 variable {ι α β : Type*} [Fintype ι] [DecidableEq α] [MeasurableSpace β]
+  [MeasurableSingletonClass β]
 
 /--
 A Database is a mapping from a finite set of indices
@@ -41,24 +42,24 @@ def Mechanism (ι α β : Type*) [MeasurableSpace β] := Database ι α → Prob
 /--
 The formal definition of Pure ε-Differential Privacy.
 -/
-def is_epsilon_dp (M : Mechanism ι α β) (ε : ℝ) : Prop :=
+def is_epsilon_dp (M : Mechanism ι α β) (ε : ℝ) [MeasurableSpace β] : Prop :=
   ∀ (d1 d2 : Database ι α) (S : Set β),
   are_neighbors d1 d2 → MeasurableSet S →
   (M d1 S) ≤ ENNReal.ofReal (Real.exp ε) * (M d2 S)
 
-def is_item_epsilon_dp (M : Mechanism ι α β) (ε : ℝ) : Prop :=
+def is_item_epsilon_dp (M : Mechanism ι α β) (ε : ℝ) [MeasurableSpace β] : Prop :=
   ∀ (d1 d2 : Database ι α) (s : β), are_neighbors d1 d2 →
   (M d1 {s}) ≤ ENNReal.ofReal (Real.exp ε) * (M d2 {s})
 
 
-theorem dp_item_to_set (m : Mechanism ι α β) (ε : ℝ) (h : is_item_epsilon_dp m ε) :
-is_epsilon_dp m ε := by
-
+theorem dp_item_to_set (m : Mechanism ι α β) (ε : ℝ) :
+is_item_epsilon_dp m ε -> is_epsilon_dp m ε := by
   sorry
 
-theorem dp_set_to_item (m : Mechanism ι α β) (ε : ℝ) (h : is_epsilon_dp m ε) :
-is_item_epsilon_dp m ε := by
-  sorry
+theorem dp_set_to_item (m : Mechanism ι α β) (ε : ℝ) :
+is_epsilon_dp m ε -> is_item_epsilon_dp m ε := by
+  intro h_item_dp db1 db2 s h_neighbors
+  exact h_item_dp db1 db2 {s} h_neighbors (MeasurableSet.singleton s)
 
 theorem dp_set_items_eq (m : Mechanism ι α β) (ε : ℝ) :
   is_epsilon_dp m ε ↔ is_item_epsilon_dp m ε := by
