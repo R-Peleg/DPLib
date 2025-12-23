@@ -3,6 +3,7 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Basic
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.WithDensity
 
 open MeasureTheory
 
@@ -46,18 +47,38 @@ def is_epsilon_dp (M : Mechanism ι α β) (ε : ℝ) [MeasurableSpace β] : Pro
   are_neighbors d1 d2 → MeasurableSet S →
   (M d1 S) ≤ ENNReal.ofReal (Real.exp ε) * (M d2 S)
 
+section Singletons
+variable [Countable β] [MeasurableSingletonClass β]
+
 def is_item_epsilon_dp (M : Mechanism ι α β) (ε : ℝ) [MeasurableSpace β] : Prop :=
   ∀ (d1 d2 : Database ι α) (s : β), are_neighbors d1 d2 →
   (M d1 {s}) ≤ ENNReal.ofReal (Real.exp ε) * (M d2 {s})
 
-
-section Singletons
-
 theorem dp_item_to_set (m : Mechanism ι α β) (ε : ℝ) :
 is_item_epsilon_dp m ε -> is_epsilon_dp m ε := by
-  sorry
+  intro h_item_dp db1 db2 set h_neighbors h_measurable
 
-variable [MeasurableSingletonClass β]
+  have h_coe1 : ((m db1) set) = ((m db1).toMeasure set) := by
+    simp
+  have h_coe2 : ((m db2) set) = ((m db2).toMeasure set) := by
+    simp
+
+  rw [h_coe1, h_coe2, ←Measure.tsum_indicator_apply_singleton,
+  ←Measure.tsum_indicator_apply_singleton]
+
+  · rw [←ENNReal.tsum_mul_left]
+    apply ENNReal.tsum_le_tsum
+    intro a
+
+    classical
+    simp_rw [set.indicator_apply]
+
+    have H := h_item_dp db1 db2 a h_neighbors
+    aesop
+  · exact h_measurable
+  exact h_measurable
+
+omit [Countable β] in
 theorem dp_set_to_item (m : Mechanism ι α β) (ε : ℝ) :
 is_epsilon_dp m ε -> is_item_epsilon_dp m ε := by
   intro h_item_dp db1 db2 s h_neighbors
