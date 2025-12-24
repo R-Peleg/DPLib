@@ -58,23 +58,24 @@ theorem dp_item_to_set (m : Mechanism ι α β) (ε : ℝ) :
 is_item_epsilon_dp m ε -> is_epsilon_dp m ε := by
   intro h_item_dp db1 db2 set h_neighbors h_measurable
 
-  have h_coe1 : ((m db1) set) = ((m db1).toMeasure set) := by
-    simp
-  have h_coe2 : ((m db2) set) = ((m db2).toMeasure set) := by
-    simp
+  have m_item_dp := h_item_dp db1 db2
 
-  rw [h_coe1, h_coe2, ←Measure.tsum_indicator_apply_singleton _ _ h_measurable,
-  ←Measure.tsum_indicator_apply_singleton _ _ h_measurable]
-
-  rw [←ENNReal.tsum_mul_left]
-  apply ENNReal.tsum_le_tsum
-  intro a
-
-  classical
-  simp_rw [set.indicator_apply]
-
-  have H := h_item_dp db1 db2 a h_neighbors
-  aesop
+  calc ENNReal.ofNNReal ((m db1) set)
+  _ = ((m db1).toMeasure set) := by simp only [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
+  _ = ↑(∑' x, set.indicator (fun y => (m db1 {y} : ENNReal)) x) :=
+    by rw [←Measure.tsum_indicator_apply_singleton _ _ h_measurable]; simp
+  _ <= ∑' x, set.indicator (fun y =>
+      (ENNReal.ofReal (Real.exp ε)) * ((m db2 {y}) : ENNReal)) x :=
+    by refine ENNReal.tsum_le_tsum (fun x => ?_); classical simp_rw [set.indicator_apply]; aesop;
+  _ = (ENNReal.ofReal (Real.exp ε)) *
+      ∑' x, set.indicator (fun y => (((m db2).toMeasure {y}) : ENNReal)) x :=
+    by simp_rw [
+      ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure,
+      Set.indicator_const_mul,
+      ENNReal.tsum_mul_left]
+  _ = (ENNReal.ofReal (Real.exp ε)) * ↑((m db2) set) :=
+    by rw [Measure.tsum_indicator_apply_singleton _ _ h_measurable]; simp
+  ;
 
 omit [Countable β] in
 theorem dp_set_to_item (m : Mechanism ι α β) (ε : ℝ) :
