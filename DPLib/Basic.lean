@@ -63,20 +63,18 @@ is_item_epsilon_dp m ε -> is_epsilon_dp m ε := by
   have h_coe2 : ((m db2) set) = ((m db2).toMeasure set) := by
     simp
 
-  rw [h_coe1, h_coe2, ←Measure.tsum_indicator_apply_singleton,
-  ←Measure.tsum_indicator_apply_singleton]
+  rw [h_coe1, h_coe2, ←Measure.tsum_indicator_apply_singleton _ _ h_measurable,
+  ←Measure.tsum_indicator_apply_singleton _ _ h_measurable]
 
-  · rw [←ENNReal.tsum_mul_left]
-    apply ENNReal.tsum_le_tsum
-    intro a
+  rw [←ENNReal.tsum_mul_left]
+  apply ENNReal.tsum_le_tsum
+  intro a
 
-    classical
-    simp_rw [set.indicator_apply]
+  classical
+  simp_rw [set.indicator_apply]
 
-    have H := h_item_dp db1 db2 a h_neighbors
-    aesop
-  · exact h_measurable
-  exact h_measurable
+  have H := h_item_dp db1 db2 a h_neighbors
+  aesop
 
 omit [Countable β] in
 theorem dp_set_to_item (m : Mechanism ι α β) (ε : ℝ) :
