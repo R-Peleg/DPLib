@@ -107,3 +107,10 @@ is_epsilon_dp m ε₁ → is_epsilon_dp m ε₂ := by
   calc
   (m d1) s ≤ ENNReal.ofReal (Real.exp ε₁) * (m d2) s := h_dp d1 d2 s h_neighbors h_measurable
   _         ≤ ENNReal.ofReal (Real.exp ε₂) * (m d2) s := by gcongr;
+
+section Sensitivity
+variable [PseudoMetricSpace β]
+def has_sensitivity (q : Query ι α β) (Δ : ℝ) : Prop :=
+  ∀ db1 db2, are_neighbors db1 db2 -> dist (q db1) (q db2) <= Δ
+
+end Sensitivity
