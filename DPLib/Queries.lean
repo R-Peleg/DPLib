@@ -19,6 +19,12 @@ lemma card_sub_card_eq (s t : Finset α) : t.card - s.card = (t \ s).card - (s \
     _ = (t \ (s ∩ t)).card - (s \ t).card := by grind
     _ = (t \ s).card - (s \ t).card := by grind
 
+lemma nat_diff_le_cast (a b c : ℕ) : a - b ≤ (c : ℕ) -> (a: ℝ) - (b: ℝ) ≤ c := by
+  intro h
+  simp
+  simp at h
+  norm_cast
+
 theorem count_sensitivity_one (criteria : α → Bool) :
     has_sensitivity (countMatching criteria : Query ι α ℕ) 1 := by
   rw [has_sensitivity]
@@ -38,9 +44,8 @@ theorem count_sensitivity_one (criteria : α → Bool) :
     · have h1: (S1 \ S2) == {} := by grind
       grind
   have h_card_diff1_R : (S1.card : ℝ) - (S2.card : ℝ) <= 1 := by
-    simp
-    simp at h_card_diff1
-    norm_cast
+    exact_mod_cast nat_diff_le_cast S1.card S2.card 1 h_card_diff1
+
   have h_card_diff2 : S2.card - S1.card <= 1 := by
     rw [card_sub_card_eq]
     by_cases k ∈ S2 \ S1
@@ -48,10 +53,8 @@ theorem count_sensitivity_one (criteria : α → Bool) :
       grind
     · have h1: (S2 \ S1) == {} := by grind
       grind
-  have h_card_diff2_R : (S2.card : ℝ) - (S1.card : ℝ) <= 1 := by
-    simp
-    simp at h_card_diff2
-    norm_cast
+  have h_card_diff2_R : (S2.card : ℝ) - (S1.card : ℝ) <= (1 : ℝ) := by
+    exact_mod_cast nat_diff_le_cast S2.card S1.card 1 h_card_diff2
 
   have h_card_abs_diff : |(S1.card : ℝ) - (S2.card: ℝ)| <= 1 := by
     by_cases h_pos : 0 ≤ (S1.card : ℝ) - (S2.card : ℝ)
